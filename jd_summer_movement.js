@@ -15,7 +15,7 @@ const MovementFaker = require('./MovementFaker.js')
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
-const ShHelpFlag = true;//是否SH助力  true 助力，false 不助力
+const ShHelpFlag = $.isNode() ? (process.env.summer_movement_ShHelpFlag ? process.env.summer_movement_ShHelpFlag : true) : ($.getdata("summer_movement_ShHelpFlag") ? $.getdata("summer_movement_ShHelpFlag") : true);;//是否SH助力  true 助力，false 不助力
 const ShHelpAuthorFlag = true;//是否助力作者SH  true 助力，false 不助力
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [];
@@ -51,8 +51,9 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       'SH互助：内部账号自行互助(排名靠前账号得到的机会多),多余的助力次数会默认助力作者内置助力码\n' +
       '店铺任务 已添加\n' +
       '新增模式 正道的光\n' +
+      '添加入会但并不完全入会(领取已经入会的任务，脚本不会入会请放心使用)\n' +
       '活动时间：2021-07-08至2021-08-8\n' +
-      '脚本更新时间：2021年7月8日 16点00分\n'
+      '脚本更新时间：2021年7月8日 17点00分\n'
       );
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
@@ -70,7 +71,6 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
   }
   // 助力
   let res = [];
-  if (new Date().getUTCHours() + 8 >= 17) res = await getAuthorShareCode() || [];
   if (ShHelpAuthorFlag) {
     $.innerShInviteList = getRandomArrayElements([...$.innerShInviteList, ...res], [...$.innerShInviteList, ...res].length);
     $.ShInviteList.push(...$.innerShInviteList);
@@ -85,13 +85,15 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
     // $.secretp = $.secretpInfo[$.UserName];
     $.index = i + 1;
     if (new Date().getUTCHours() + 8 >= 9) {
-      if ($.ShInviteList && $.ShInviteList.length) console.log(`\n******开始内部京东账号【百元守卫站SH】助力*********\n`);
-      for (let i = 0; i < $.ShInviteList.length && ShHelpFlag && $.canHelp; i++) {
-        if(aabbiill()) {
-          console.log(`${$.UserName} 去助力SH码 ${$.ShInviteList[i]}`);
-          $.inviteId = $.ShInviteList[i];
-          await takePostRequest('shHelp');
-          await $.wait(1000);
+      if(ShHelpFlag){
+        if ($.ShInviteList && $.ShInviteList.length) console.log(`\n******开始内部京东账号【百元守卫站SH】助力*********\n`);
+        for (let i = 0; i < $.ShInviteList.length && $.canHelp; i++) {
+          if(aabbiill()) {
+            console.log(`${$.UserName} 去助力SH码 ${$.ShInviteList[i]}`);
+            $.inviteId = $.ShInviteList[i];
+            await takePostRequest('shHelp');
+            await $.wait(1000);
+          }
         }
       }
       $.canHelp = true;
@@ -179,7 +181,7 @@ async function movement() {
     for (let i = 0; i < $.taskList.length && !$.hotFlag; i++) {
       $.oneTask = $.taskList[i];
       if(!aabbiill()) continue;
-      if ([1, 3, 5, 7, 9, 26].includes($.oneTask.taskType) && $.oneTask.status === 1) {
+      if ([1, 3, 5, 7, 9, 21, 26].includes($.oneTask.taskType) && $.oneTask.status === 1) {
         $.activityInfoList = $.oneTask.shoppingActivityVos || $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.browseShopVo;
         for (let j = 0; j < $.activityInfoList.length; j++) {
           $.oneActivityInfo = $.activityInfoList[j];
@@ -196,15 +198,22 @@ async function movement() {
           } else if ($.oneTask.taskType === 5 || $.oneTask.taskType === 3 || $.oneTask.taskType === 26) {
             await $.wait(2000);
             console.log(`任务完成`);
+          } else if ($.oneTask.taskType === 21) {
+            let data = $.callbackInfo
+            if(data.data && data.data.bizCode === 0){
+              console.log(`获得：${data.data.result.score}`);
+            }else if(data.data && data.data.bizMsg){
+              console.log(data.data.bizMsg);
+            }else{
+            console.log(JSON.stringify($.callbackInfo));
+            }
+            await $.wait(2000);
           } else {
             console.log($.callbackInfo);
             console.log(`任务失败`);
             await $.wait(3000);
-
           }
-
         }
-        break
       } else if ($.oneTask.taskType === 2 && $.oneTask.status === 1 && $.oneTask.scoreRuleVos[0].scoreRuleType === 2){
         console.log(`做任务：${$.oneTask.taskName};等待完成 (实际不会添加到购物车)`);
         $.taskId = $.oneTask.taskId;
@@ -258,7 +267,7 @@ async function movement() {
       $.shopTask = $.shopResult.taskVos || [];
       for (let i = 0; i < $.shopTask.length; i++) {
         $.oneTask = $.shopTask[i];
-        if($.oneTask.taskType === 21 || $.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;} //不做入会//不做邀请
+        if($.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;} //不做邀请
         $.activityInfoList = $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.shoppingActivityVos || $.oneTask.browseShopVo || $.oneTask.simpleRecordInfoVo;
         if($.oneTask.taskType === 12){//签到
           $.oneActivityInfo =  $.activityInfoList;
@@ -435,7 +444,7 @@ async function dealReturn(type, res) {
       break;
     case 'olympicgames_collectCurrency':
       if (data.code === 0 && data.data && data.data.result) {
-        console.log(`收取成功，获得：${data.data.result.poolCurrency}`);
+        console.log(`收取成功，当前卡币：${data.data.result.poolCurrency}`);
       } else if (data.data && data.data.bizMsg) {
         console.log(data.data.bizMsg);
       } else {
