@@ -2,7 +2,7 @@
 
 https://wbbny.m.jd.com/babelDiy/Zeus/2rtpffK8wqNyPBH6wyUDuBKoAbCt/index.html
 
-cron 12 9,11,13,15,17 * * * https://raw.githubusercontent.com/smiek2221/scripts/master/jd_summer_movement.js
+cron 12 0,9-15,17,18,21 * * * https://raw.githubusercontent.com/smiek2221/scripts/master/jd_summer_movement.js
 
 */
 
@@ -21,6 +21,7 @@ let smashUtils;
 const summer_movement_joinjoinjoinhui = $.isNode() ? (process.env.summer_movement_joinjoinjoinhui ? process.env.summer_movement_joinjoinjoinhui : false) : ($.getdata("summer_movement_joinjoinjoinhui") ? $.getdata("summer_movement_joinjoinjoinhui") : false);;//是否入会  true 入会，false 不入会
 
 const ShHelpFlag = $.isNode() ? (process.env.summer_movement_ShHelpFlag ? process.env.summer_movement_ShHelpFlag : true) : ($.getdata("summer_movement_ShHelpFlag") ? $.getdata("summer_movement_ShHelpFlag") : true);;//是否SH助力  true 助力，false 不助力
+
 const ShHelpAuthorFlag = true;//是否助力作者SH  true 助力，false 不助力
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [];
@@ -57,7 +58,7 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       '店铺任务 已添加\n' +
       '新增 入会环境变量 默认不入会\n' +
       '活动时间：2021-07-08至2021-08-8\n' +
-      '脚本更新时间：2021年7月8日 18点00分\n'
+      '脚本更新时间：2021年7月8日 19点00分\n'
       );
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
@@ -194,7 +195,7 @@ async function movement() {
           }
           $.callbackInfo = {};
           console.log(`做任务：${$.oneActivityInfo.title || $.oneActivityInfo.taskName || $.oneActivityInfo.shopName};等待完成`);
-          if ($.oneTask.taskType === 21 && summer_movement_joinjoinjoinhui == true){
+          if ($.oneTask.taskType === 21 && summer_movement_joinjoinjoinhui){
             let channel = $.oneActivityInfo.memberUrl.match(/channel=(\d+)/) ? $.oneActivityInfo.memberUrl.match(/channel=(\d+)/)[1] : '';
             const jiarubody = {
               venderId: $.oneActivityInfo.vendorIds,
@@ -490,7 +491,7 @@ async function dealReturn(type, res) {
       break;
     case 'olympicgames_getTaskDetail':
       if (data.data && data.data.bizCode === 0) {
-        console.log(`互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败'}`);
+        console.log(`互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败'}\n`);
         if (data.data.result && data.data.result.inviteId) {
           $.inviteList.push({
             'ues': $.UserName,
@@ -508,7 +509,7 @@ async function dealReturn(type, res) {
       break;
     case 'olypicgames_guradHome':
       if (data.data && data.data.bizCode === 0) {
-        console.log(`SH互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败'}`);
+        console.log(`SH互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败\n'}`);
         if (data.data.result && data.data.result.inviteId) {
           if (data.data.result.inviteId) $.ShInviteList.push(data.data.result.inviteId);
           console.log(`守护金额：${Number(data.data.result.activityLeftAmount || 0)} 护盾剩余：${timeFn(Number(data.data.result.guardLeftSeconds || 0) * 1000)} 离结束剩：${timeFn(Number(data.data.result.activityLeftSeconds || 0) * 1000)}`)
