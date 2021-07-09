@@ -217,6 +217,7 @@ async function dealReturn(type, res) {
       }
       break;
     case 'olypicgames_guradHome':
+      console.log(res)
       if (data.data && data.data.bizCode === 0) {
         console.log(`SH互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败\n'}`);
         if (data.data.result && data.data.result.inviteId) {
