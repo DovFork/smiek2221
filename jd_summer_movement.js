@@ -66,7 +66,7 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       '新增 微信任务\n' +
       '移除百元守卫战 请到help食用\n' +
       '活动时间：2021-07-08至2021-08-08\n' +
-      '脚本更新时间：2021年7月9日 19点00分\n'
+      '脚本更新时间：2021年7月10日 00点00分\n'
       );
       if(`${summer_movement_joinjoinjoinhui}` === "true") console.log('您设置了入会')
       if(Number(summer_movement_ShHelpFlag) === 1){
@@ -157,6 +157,16 @@ async function movement() {
           $.collectId = item.type
           await takePostRequest('olympicgames_collectCurrency');
           await $.wait(1000);
+        }
+      }
+      if($.homeData.result.pawnshopInfo && $.homeData.result.pawnshopInfo.betGoodsList){
+        $.Reward = []
+        for(let i in $.homeData.result.pawnshopInfo.betGoodsList){
+          $.Reward = $.homeData.result.pawnshopInfo.betGoodsList[i]
+          if($.Reward.status == 1){
+            console.log(`开奖：${$.Reward.skuName}`)
+            await takePostRequest('olympicgames_pawnshopRewardPop');
+          }
         }
       }
     }
@@ -436,6 +446,10 @@ async function takePostRequest(type) {
       body = `functionId=olympicgames_getTaskDetail&body={"taskId":"","appSign":"2"}&client=wh5&clientVersion=1.0.0&loginWQBiz=businesst1&appid=${$.appid}`;
       myRequest = await getPostRequest(`olympicgames_getTaskDetail`,body);
       break;
+    case 'olympicgames_pawnshopRewardPop':
+      body = `functionId=olympicgames_pawnshopRewardPop&body={"skuId":${$.Reward.skuId}}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
+      myRequest = await getPostRequest(`olympicgames_pawnshopRewardPop`,body);
+      break;
     default:
       console.log(`错误${type}`);
   }
@@ -662,6 +676,16 @@ async function dealReturn(type, res) {
     case 'wxTaskDetail':
       if (data.code === 0) {
         $.wxTaskList = data.data.result && data.data.result.taskVos || [];
+      }
+      break;
+    case 'olympicgames_pawnshopRewardPop':
+      if (data.data && data.data.bizCode === 0 && data.data.result) {
+        console.log(res)
+        console.log(`结果：${data.data.result.currencyReward && '额外奖励' + data.data.result.currencyReward + '卡币' || ''}`)
+      } else if (data.data && data.data.bizMsg) {
+        console.log(data.data.bizMsg);
+      } else {
+        console.log(res);
       }
       break;
     default:
