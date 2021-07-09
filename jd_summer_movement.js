@@ -64,9 +64,10 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       'SH互助：内部账号自行互助(排名靠前账号得到的机会多),多余的助力次数会默认助力作者内置助力码\n' +
       '店铺任务 已添加\n' +
       '新增 入会环境变量 默认不入会\n' +
+      '新增 微信任务\n' +
       '移除百元守卫战 请到help食用\n' +
       '活动时间：2021-07-08至2021-08-08\n' +
-      '脚本更新时间：2021年7月9日 9点00分\n'
+      '脚本更新时间：2021年7月9日 12点00分\n'
       );
       if(`${summer_movement_joinjoinjoinhui}` === "true") console.log('您设置了入会')
       if(Number(summer_movement_ShHelpFlag) === 1){
@@ -216,7 +217,7 @@ async function movement() {
             let sendInfo = encodeURIComponent(`{"dataSource":"newshortAward","method":"getTaskAward","reqParams":"{\\"taskToken\\":\\"${$.callbackInfo.data.result.taskToken}\\"}","sdkVersion":"1.0.0","clientLanguage":"zh"}`)
             await callbackResult(sendInfo)
           } else if ($.oneTask.taskType === 5 || $.oneTask.taskType === 3 || $.oneTask.taskType === 26) {
-            await $.wait(getRndInteger(7000, 1500));
+            await $.wait(getRndInteger(700, 1500));
             console.log(`任务完成`);
           } else if ($.oneTask.taskType === 21) {
             let data = $.callbackInfo
@@ -272,6 +273,33 @@ async function movement() {
         }
       }
     }
+    
+    //==================================微信任务========================================================================
+    $.wxTaskList = [];
+    if(!$.hotFlag) await takePostRequest('wxTaskDetail');
+    for (let i = 0; i < $.wxTaskList.length; i++) {
+      $.oneTask = $.wxTaskList[i];
+      if($.oneTask.taskType === 2 || $.oneTask.status !== 1){continue;} //不做加购
+      $.activityInfoList = $.oneTask.shoppingActivityVos || $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.browseShopVo;
+      for (let j = 0; j < $.activityInfoList.length; j++) {
+        $.oneActivityInfo = $.activityInfoList[j];
+        if ($.oneActivityInfo.status !== 1 || !$.oneActivityInfo.taskToken) {
+          continue;
+        }
+        $.callbackInfo = {};
+        console.log(`做任务：${$.oneActivityInfo.title || $.oneActivityInfo.taskName || $.oneActivityInfo.shopName};等待完成`);
+        await takePostRequest('olympicgames_doTaskDetail');
+        if ($.callbackInfo.code === 0 && $.callbackInfo.data && $.callbackInfo.data.result && $.callbackInfo.data.result.taskToken) {
+          await $.wait(getRndInteger(7000, 8000));
+          let sendInfo = encodeURIComponent(`{"dataSource":"newshortAward","method":"getTaskAward","reqParams":"{\\"taskToken\\":\\"${$.callbackInfo.data.result.taskToken}\\"}","sdkVersion":"1.0.0","clientLanguage":"zh"}`)
+          await callbackResult(sendInfo)
+        } else  {
+          await $.wait(getRndInteger(1000, 2000));
+          console.log(`任务完成`);
+        }
+      }
+    }
+
     // 店铺
     console.log(`\n去做店铺任务\n`);
     $.shopInfoList = [];
@@ -411,6 +439,10 @@ async function takePostRequest(type) {
       body = `functionId=olympicgames_boxShopLottery&body={"shopSign":${$.shopSign}}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
       myRequest = await getPostRequest(`olympicgames_boxShopLottery`,body);
       break;
+    case 'wxTaskDetail':
+      body = `functionId=olympicgames_getTaskDetail&body={"taskId":"","appSign":"2"}&client=wh5&clientVersion=1.0.0&loginWQBiz=businesst1&appid=${$.appid}`;
+      myRequest = await getPostRequest(`olympicgames_getTaskDetail`,body);
+      break;
     default:
       console.log(`错误${type}`);
   }
@@ -515,7 +547,17 @@ async function dealReturn(type, res) {
       }
       break;
     case 'olympicgames_doTaskDetail':
-      $.callbackInfo = data;
+      if (data.data && data.data.bizCode === 0) {
+        if (data.data.result && data.data.result.taskToken) {
+          $.callbackInfo = data;
+        }else if(data.data.result && data.data.result.successToast){
+          console.log(data.data.result.successToast);
+        }
+      } else if (data.data && data.data.bizMsg) {
+        console.log(data.data.bizMsg);
+      } else {
+        console.log(res);
+      }
       break;
     case 'olympicgames_getFeedDetail':
       if (data.code === 0) {
@@ -624,6 +666,11 @@ async function dealReturn(type, res) {
         console.log(res);
       }
       break
+    case 'wxTaskDetail':
+      if (data.code === 0) {
+        $.wxTaskList = data.data.result && data.data.result.taskVos || [];
+      }
+      break;
     default:
       console.log(`未判断的异常${type}`);
   }
