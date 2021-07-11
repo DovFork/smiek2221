@@ -17,7 +17,7 @@ const { R_OK } = require('fs').constants;
 const vm = require('vm');
 let smashUtils;
 
-let summer_movement_joinjoinjoinhui = false;//是否入会  true 入会，false 不入会
+let summer_movement_joinjoinjoinhui = true;//是否入会  true 入会，false 不入会
 if ($.isNode() && process.env.summer_movement_joinjoinjoinhui) {
   summer_movement_joinjoinjoinhui = process.env.summer_movement_joinjoinjoinhui;
 }
@@ -35,7 +35,7 @@ if ($.isNode() && process.env.summer_movement_HelpHelpHelpFlag) {
 }
 
 
-const ShHelpAuthorFlag = true;//是否助力作者SH  true 助力，false 不助力
+const ShHelpAuthorFlag = false;//是否助力作者SH  true 助力，false 不助力
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [];
 $.cookie = '';
@@ -203,7 +203,6 @@ async function movement() {
     //做任务
     for (let i = 0; i < $.taskList.length && !$.hotFlag; i++) {
       $.oneTask = $.taskList[i];
-      if(!aabbiill()) continue;
       if ([1, 3, 5, 7, 9, 21, 26].includes($.oneTask.taskType) && $.oneTask.status === 1) {
         $.activityInfoList = $.oneTask.shoppingActivityVos || $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.browseShopVo;
         for (let j = 0; j < $.activityInfoList.length; j++) {
@@ -322,7 +321,6 @@ async function movement() {
     await takePostRequest('qryCompositeMaterials');
     for (let i = 0; i < $.shopInfoList.length; i++) {
       let taskbool = false
-      if(!aabbiill()) continue;
       $.shopSign = $.shopInfoList[i].extension.shopId;
       console.log(`执行第${i+1}个店铺任务：${$.shopInfoList[i].name} ID:${$.shopSign}`);
       $.shopResult = {};
@@ -837,17 +835,6 @@ function joinjoinjoinhui(url,Referer) {
     shuffled[i] = temp;
   }
   return shuffled.slice(min);
-}
-
-// 正道的光
-function aabbiill(){
-  let ccdd = 0
-  if(new Date().getUTCHours() + 8 >= 18 && new Date().getUTCHours() + 8 < 24){
-    ccdd = 1
-  }else{
-    ccdd = getRndInteger(0,3)
-  }
-  return ccdd == 1
 }
 
 // 随机数
