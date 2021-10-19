@@ -195,6 +195,7 @@ function getInfo(inviteId, flag = false) {
             data = JSON.parse(data);
             if (data.code === 0) {
               if (data.data && data['data']['bizCode'] === 0) {
+                console.log(`待提现:￥${data.data.result.userActBaseInfo.poolMoney}`)
                 for(let vo of data.data.result && data.data.result.popWindows || []){
                   if (vo && vo.type === "dailycash_second") {
                     await receiveCash()
@@ -345,7 +346,7 @@ function shareCodesFormat() {
     if ($.shareCodesArr[$.index - 1]) {
       $.newShareCodes = $.shareCodesArr[$.index - 1].split('@');
     }
-    if($.index == 1) $.newShareCodes = [...$.newShareCodes,...inviteCodes]
+    if($.index == 1) $.newShareCodes = [...inviteCodes,...$.newShareCodes]
     try{
       const readShareCodeRes = await readShareCode();
       if (readShareCodeRes && readShareCodeRes.code === 200) {
