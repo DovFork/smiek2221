@@ -1,10 +1,10 @@
 /*
 双十一无门槛红包🧧
-ck1助力 作者呱呱呱
+ck1助力 作者
 其余助力ck1
 https://u.jd.com/3C7eCOr
 跳转到app 可查看助力情况
-1 0,12,18 * * *
+1 0,12,18 * * * gua_1111RedEnvelope.js
 */
 
 const $ = new Env('双十一无门槛红包🧧');
