@@ -1,15 +1,18 @@
 /*
-双十一无门槛红包🧧
+双十一无门槛红包
 ck1助力 作者
 其余助力ck1
 https://u.jd.com/3C7eCOr
 跳转到app 可查看助力情况
-1 0,12,18 * * * gua_1111RedEnvelope.js
+1 0,12,18 * * * gua_RedEnvelope.js
+
+返利变量：gua_redEnvelope_rebateCode，默认给脚本作者返利，若需要返利给自己，请自己修改返利变量gua_redEnvelope_rebateCode
+例：gua_redEnvelope_rebateCode="你的返利code"
 */
 
 let rebateCodes = ''
 
-const $ = new Env('双十一无门槛红包🧧');
+const $ = new Env('双十一无门槛红包');
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 const notify = $.isNode() ? require('./sendNotify') : '';
 const Faker = $.isNode() ? require('./sign_graphics_validate.js') : '';
@@ -123,7 +126,7 @@ function getCoupons(shareId = '',type = 1) {
       headers: {
         "Accept-Language": "zh-cn",
         "Accept-Encoding": "gzip, deflate, br",
-        'Cookie': `${cookie} ${newCookie}`,
+        'Cookie': `${newCookie} ${cookie}`,
         "User-Agent": $.UA ,
       }
     }
@@ -188,7 +191,7 @@ function shareUnionCoupon() {
       headers: {
         "Accept-Language": "zh-cn",
         "Accept-Encoding": "gzip, deflate, br",
-        'Cookie': `${cookie} ${newCookie}`,
+        'Cookie': `${newCookie} ${cookie}`,
         "User-Agent": $.UA ,
       }
     }
@@ -226,7 +229,7 @@ function getUrl1() {
       url: $.url1,
       followRedirect:false,
       headers: {
-        'Cookie': `${cookie} ${newCookie}`,
+        'Cookie': `${newCookie} ${cookie}`,
         "User-Agent": $.UA
       }
     }
@@ -251,7 +254,7 @@ function getUrl() {
       url: `https://u.jd.com/${rebateCode}?s=${$.shareCode}`,
       followRedirect:false,
       headers: {
-        'Cookie': `${cookie} ${newCookie}`,
+        'Cookie': `${newCookie} ${cookie}`,
         "User-Agent": $.UA
       }
     }
