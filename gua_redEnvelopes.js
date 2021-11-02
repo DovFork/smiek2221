@@ -1,6 +1,7 @@
 /*
 双十一无门槛红包
-cron 0 0,12,18 * * *  https://raw.githubusercontent.com/smiek2121/scripts/master/gua_redEnvelope.js
+cron 0 0,12,18 * * *  https://raw.githubusercontent.com/smiek2121/scripts/master/gua_redEnvelopes.js
+整点跑 红包几率大点
 ck1助力 作者
 其余助力ck1
 https://u.jd.com/3C7eCOr
@@ -48,6 +49,7 @@ let nowTime = new Date().getTime() + new Date().getTimezoneOffset()*60*1000 + 8*
     if ($.isNode()) await notify.sendNotify($.name + '活动已结束', `请删除此脚本\n咱江湖再见`);
     return
   }
+  console.log('整点跑 红包几率大点\n0点 12点')
   $.shareCode = 'zZDrk'
   for (let i = 0; i < cookiesArr.length; i++) {
     cookie = cookiesArr[i];
