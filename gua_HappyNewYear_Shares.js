@@ -3,8 +3,8 @@
 账号内互助
 每人2次助力机会 助力满需要5次
 
-cron:15 10,22 31,1 1,2 *
-15 10,22 31,1 1,2 *  https://raw.githubusercontent.com/smiek2121/scripts/master/gua_HappyNewYear_Share.js
+cron:15 10,22 1-14 2 *
+15 10,22 1-14 2 *  https://raw.githubusercontent.com/smiek2121/scripts/master/gua_HappyNewYear_Shares.js
 
 
 */
@@ -33,7 +33,7 @@ resMsg = ''
 $.endFlag = false
 let shareCodeArr = {}
 $.runArr = {}
-const activeEndTime = '2022/02/02 00:00:00+08:00';//活动结束时间
+const activeEndTime = '2022/02/15 00:00:00+08:00';//活动结束时间
 let nowTime = new Date().getTime() + new Date().getTimezoneOffset()*60*1000 + 8*60*60*1000;
 let timeH = $.time('H')
 !(async () => {
