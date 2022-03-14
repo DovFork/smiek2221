@@ -79,7 +79,7 @@ let activityCookie =''
     return;
   }
   $.activityId = "2203100041074702"
-  $.shareUuid = "76f9a4f1df2e42fd98c05997c0c9bc7d"
+  $.shareUuid = "0b040fd16d334886a60c9194ed39e156"
   console.log(`入口:\nhttps://lzkjdz-isv.isvjcloud.com/m/1000410747/99/${$.activityId}/?helpUuid=${$.shareUuid}`)
 
   for (let i = 0; i < cookiesArr.length; i++) {
@@ -122,12 +122,12 @@ async function run() {
       return
     }
     await getCk()
+    if (activityCookie == '') {
+      console.log(`获取cookie失败`); return;
+    }
     if($.activityEnd === true){
       console.log('活动结束')
       return
-    }
-    if (activityCookie == '') {
-      console.log(`获取cookie失败`); return;
     }
     if($.outFlag){
       console.log('此ip已被限制，请过10分钟后再执行脚本\n')
@@ -156,10 +156,13 @@ async function run() {
       console.log('开卡')
       $.joinVenderId = 1000410747
       await joinShop()
-      if($.errorJoinShop && $.errorJoinShop.indexOf('活动太火爆，请稍后再试') > -1){
+      if($.errorJoinShop.indexOf('活动太火爆，请稍后再试') > -1){
         console.log('重新开卡')
-        await $.wait(parseInt(Math.random() * 2000 + 2000, 10))
+        await $.wait(parseInt(Math.random() * 2000 + 3000, 10))
         await joinShop()
+      }
+      if($.errorJoinShop.indexOf('活动太火爆，请稍后再试') > -1){
+        console.log("开卡失败❌")
       }
       await takePostRequest('activityContent');
     }
@@ -305,7 +308,9 @@ async function dealReturn(type, data) {
           if(res.result && res.result === true){
             $.actorUuid = res.data.customerId || ''
             $.helpStatus = res.data.helpStatus || ''
+            $.openStatus = res.data.openStatus || ''
             $.assistCount = res.data.assistCount || 0
+            if(res.data.sendBeanNum) console.log(`获得${res.data.sendBeanNum}豆`)
           }else if(res.errorMessage){
             console.log(`${type} ${res.errorMessage || ''}`)
           }else{
